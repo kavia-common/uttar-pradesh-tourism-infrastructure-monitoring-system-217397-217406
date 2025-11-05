@@ -26,6 +26,7 @@ public class OpenApiConfig {
                         new Tag().name("Authentication").description("JWT authentication and token refresh"),
                         new Tag().name("Example").description("Protected example endpoints for RBAC demo"),
                         new Tag().name("Projects").description("Project management"),
+                        new Tag().name("Documents").description("Project document upload, listing and download"),
                         new Tag().name("Contractors").description("Contractor/vendor management"),
                         new Tag().name("Tenders").description("Tender management"),
                         new Tag().name("Contracts").description("Contract award and management"),

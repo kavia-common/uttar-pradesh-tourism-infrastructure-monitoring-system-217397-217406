@@ -27,6 +27,12 @@ public class ProjectDocument {
     @Column(length=200)
     private String category; // TENDER_DOC, INSPECTION_PHOTO, REPORT, etc.
 
+    @Column(name = "size_bytes")
+    private Long size;
+
+    @Column(length = 80)
+    private String uploaderId;
+
     private LocalDateTime uploadedAt = LocalDateTime.now();
 
     public ProjectDocument(){}
@@ -55,6 +61,14 @@ public class ProjectDocument {
     public String getCategory() { return category; }
     // PUBLIC_INTERFACE
     public void setCategory(String category) { this.category = category; }
+    // PUBLIC_INTERFACE
+    public Long getSize() { return size; }
+    // PUBLIC_INTERFACE
+    public void setSize(Long size) { this.size = size; }
+    // PUBLIC_INTERFACE
+    public String getUploaderId() { return uploaderId; }
+    // PUBLIC_INTERFACE
+    public void setUploaderId(String uploaderId) { this.uploaderId = uploaderId; }
     // PUBLIC_INTERFACE
     public LocalDateTime getUploadedAt() { return uploadedAt; }
     // PUBLIC_INTERFACE
