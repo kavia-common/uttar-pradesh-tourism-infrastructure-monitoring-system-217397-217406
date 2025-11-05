@@ -35,7 +35,8 @@ public class OpenApiConfig {
                         new Tag().name("Handovers").description("Project handover"),
                         new Tag().name("Funds").description("Fund allocations and releases"),
                         new Tag().name("Payments").description("Payments to contractors"),
-                        new Tag().name("Notifications").description("User notifications")
+                        new Tag().name("Notifications").description("User notifications"),
+                        new Tag().name("Reports").description("Reporting endpoints backed by database views (CSV streaming)")
                 ));
     }
 }
