@@ -166,10 +166,18 @@ public class DomainControllers {
         return ResponseEntity.ok(service.updateMilestone(id, dto));
     }
 
+    @PatchMapping("/milestones/{id}/progress")
+    @Tag(name="Milestones")
+    @Operation(summary="Update milestone progress with geotag", description="Update milestone progress percentage along with optional latitude/longitude and location note. Performs reverse-geocoding if enabled and note is absent.")
+    // PUBLIC_INTERFACE
+    public ResponseEntity<Milestone> updateMilestoneProgress(@PathVariable Long id, @Valid @RequestBody MilestoneProgressUpdate dto) {
+        return ResponseEntity.ok(service.updateMilestoneProgressWithGeo(id, dto));
+    }
+
     // INSPECTIONS
     @PostMapping("/inspections")
     @Tag(name="Inspections")
-    @Operation(summary="Create inspection", description="Record an inspection")
+    @Operation(summary="Create inspection", description="Record an inspection with optional geotag (lat/lng) and location text")
     // PUBLIC_INTERFACE
     public ResponseEntity<Inspection> createInspection(@Valid @RequestBody InspectionCreate dto) {
         return ResponseEntity.ok(service.createInspection(dto));

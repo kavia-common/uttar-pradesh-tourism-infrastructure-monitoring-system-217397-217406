@@ -2,6 +2,7 @@ package com.example.demo.service.domain;
 
 import com.example.demo.model.domain.*;
 import com.example.demo.repository.domain.*;
+import com.example.demo.service.GeoService;
 import com.example.demo.web.dto.DomainDtos.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +29,7 @@ public class DomainServices {
     private final PaymentRepository paymentRepo;
     private final ProjectDocumentRepository docRepo;
     private final NotificationRepository notificationRepo;
+    private final GeoService geoService;
 
     public DomainServices(ProjectRepository projectRepo,
                           MilestoneRepository milestoneRepo,
@@ -39,7 +41,8 @@ public class DomainServices {
                           FundRepository fundRepo,
                           PaymentRepository paymentRepo,
                           ProjectDocumentRepository docRepo,
-                          NotificationRepository notificationRepo) {
+                          NotificationRepository notificationRepo,
+                          GeoService geoService) {
         this.projectRepo = projectRepo;
         this.milestoneRepo = milestoneRepo;
         this.contractorRepo = contractorRepo;
@@ -51,6 +54,7 @@ public class DomainServices {
         this.paymentRepo = paymentRepo;
         this.docRepo = docRepo;
         this.notificationRepo = notificationRepo;
+        this.geoService = geoService;
     }
 
     // PROJECTS
@@ -245,6 +249,26 @@ public class DomainServices {
         return milestoneRepo.save(m);
     }
 
+    // PUBLIC_INTERFACE
+    @PreAuthorize("hasAuthority('MILESTONE_WRITE') or hasRole('ADMIN')")
+    @Transactional
+    public Milestone updateMilestoneProgressWithGeo(Long milestoneId, MilestoneProgressUpdate dto) {
+        Milestone m = milestoneRepo.findById(milestoneId).orElseThrow(() -> new NoSuchElementException("Milestone not found"));
+        if (dto.progressPercent != null) m.setProgressPercent(dto.progressPercent);
+        if (dto.latitude != null) m.setProgressLatitude(dto.latitude);
+        if (dto.longitude != null) m.setProgressLongitude(dto.longitude);
+
+        String note = dto.locationNote;
+        if ((note == null || note.isBlank()) && dto.latitude != null && dto.longitude != null) {
+            String reversed = geoService.reverseGeocode(dto.latitude, dto.longitude);
+            if (reversed != null && !reversed.isBlank()) {
+                note = reversed;
+            }
+        }
+        if (note != null) m.setProgressLocationNote(note);
+        return milestoneRepo.save(m);
+    }
+
     // INSPECTIONS
 
     // PUBLIC_INTERFACE
@@ -262,6 +286,19 @@ public class DomainServices {
         i.setInspectorName(dto.inspectorName);
         i.setRemarks(dto.remarks);
         i.setStatus(dto.status == null ? "PENDING" : dto.status);
+
+        // Geo
+        i.setLatitude(dto.latitude);
+        i.setLongitude(dto.longitude);
+        String locationText = dto.locationText;
+        if ((locationText == null || locationText.isBlank()) && dto.latitude != null && dto.longitude != null) {
+            String reversed = geoService.reverseGeocode(dto.latitude, dto.longitude);
+            if (reversed != null && !reversed.isBlank()) {
+                locationText = reversed;
+            }
+        }
+        i.setLocationText(locationText);
+
         return inspectionRepo.save(i);
     }
 

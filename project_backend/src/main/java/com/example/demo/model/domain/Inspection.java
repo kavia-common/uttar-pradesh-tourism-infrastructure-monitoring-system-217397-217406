@@ -29,6 +29,13 @@ public class Inspection {
     @Column(length=50)
     private String status; // PASSED/FAILED/PENDING
 
+    // Geo fields (optional)
+    private Double latitude;
+    private Double longitude;
+
+    @Column(length = 300)
+    private String locationText; // reverse-geocoded or user-provided
+
     public Inspection(){}
 
     // PUBLIC_INTERFACE
@@ -59,4 +66,16 @@ public class Inspection {
     public String getStatus() { return status; }
     // PUBLIC_INTERFACE
     public void setStatus(String status) { this.status = status; }
+    // PUBLIC_INTERFACE
+    public Double getLatitude() { return latitude; }
+    // PUBLIC_INTERFACE
+    public void setLatitude(Double latitude) { this.latitude = latitude; }
+    // PUBLIC_INTERFACE
+    public Double getLongitude() { return longitude; }
+    // PUBLIC_INTERFACE
+    public void setLongitude(Double longitude) { this.longitude = longitude; }
+    // PUBLIC_INTERFACE
+    public String getLocationText() { return locationText; }
+    // PUBLIC_INTERFACE
+    public void setLocationText(String locationText) { this.locationText = locationText; }
 }

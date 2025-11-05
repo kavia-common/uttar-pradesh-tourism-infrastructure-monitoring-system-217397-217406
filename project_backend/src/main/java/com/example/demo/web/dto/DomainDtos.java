@@ -106,6 +106,25 @@ public class DomainDtos {
         @DecimalMin("0.0") @DecimalMax("100.0") public BigDecimal progressPercent;
     }
 
+    @Schema(description = "Milestone progress update including optional geotag")
+    public static class MilestoneProgressUpdate {
+        @DecimalMin("0.0") @DecimalMax("100.0")
+        @Schema(description = "Updated progress percent for milestone", example = "42.5")
+        public BigDecimal progressPercent;
+
+        @DecimalMin(value="-90.0", inclusive=true) @DecimalMax(value="90.0", inclusive=true)
+        @Schema(description = "Latitude of the progress update", example = "26.8467")
+        public Double latitude;
+
+        @DecimalMin(value="-180.0", inclusive=true) @DecimalMax(value="180.0", inclusive=true)
+        @Schema(description = "Longitude of the progress update", example = "80.9462")
+        public Double longitude;
+
+        @Size(max = 300)
+        @Schema(description = "Optional note or reverse-geocoded location", example = "Site near Lucknow Residency")
+        public String locationNote;
+    }
+
     public static class InspectionCreate {
         @NotNull public Long projectId;
         public Long milestoneId;
@@ -113,6 +132,15 @@ public class DomainDtos {
         @Size(max=500) public String inspectorName;
         @Size(max=2000) public String remarks;
         @Size(max=50) public String status;
+
+        @DecimalMin(value="-90.0", inclusive=true) @DecimalMax(value="90.0", inclusive=true)
+        public Double latitude;
+
+        @DecimalMin(value="-180.0", inclusive=true) @DecimalMax(value="180.0", inclusive=true)
+        public Double longitude;
+
+        @Size(max = 300)
+        public String locationText;
     }
 
     public static class HandoverCreate {

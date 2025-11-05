@@ -35,6 +35,13 @@ public class Milestone {
     @Column(precision = 5, scale = 2)
     private BigDecimal progressPercent;
 
+    // Geo fields for last progress update (optional)
+    private Double progressLatitude;
+    private Double progressLongitude;
+
+    @Column(length = 300)
+    private String progressLocationNote;
+
     public Milestone() {}
 
     // PUBLIC_INTERFACE
@@ -73,4 +80,17 @@ public class Milestone {
     public BigDecimal getProgressPercent() { return progressPercent; }
     // PUBLIC_INTERFACE
     public void setProgressPercent(BigDecimal progressPercent) { this.progressPercent = progressPercent; }
+
+    // PUBLIC_INTERFACE
+    public Double getProgressLatitude() { return progressLatitude; }
+    // PUBLIC_INTERFACE
+    public void setProgressLatitude(Double progressLatitude) { this.progressLatitude = progressLatitude; }
+    // PUBLIC_INTERFACE
+    public Double getProgressLongitude() { return progressLongitude; }
+    // PUBLIC_INTERFACE
+    public void setProgressLongitude(Double progressLongitude) { this.progressLongitude = progressLongitude; }
+    // PUBLIC_INTERFACE
+    public String getProgressLocationNote() { return progressLocationNote; }
+    // PUBLIC_INTERFACE
+    public void setProgressLocationNote(String progressLocationNote) { this.progressLocationNote = progressLocationNote; }
 }
