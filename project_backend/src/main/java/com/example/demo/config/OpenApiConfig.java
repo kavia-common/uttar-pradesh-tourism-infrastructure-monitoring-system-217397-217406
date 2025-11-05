@@ -24,7 +24,17 @@ public class OpenApiConfig {
                     .contact(new Contact().name("UPSTDC").email("support@example.com")))
                 .tags(List.of(
                         new Tag().name("Authentication").description("JWT authentication and token refresh"),
-                        new Tag().name("Example").description("Protected example endpoints for RBAC demo")
+                        new Tag().name("Example").description("Protected example endpoints for RBAC demo"),
+                        new Tag().name("Projects").description("Project management"),
+                        new Tag().name("Contractors").description("Contractor/vendor management"),
+                        new Tag().name("Tenders").description("Tender management"),
+                        new Tag().name("Contracts").description("Contract award and management"),
+                        new Tag().name("Milestones").description("Project milestones and progress"),
+                        new Tag().name("Inspections").description("Inspections and site visits"),
+                        new Tag().name("Handovers").description("Project handover"),
+                        new Tag().name("Funds").description("Fund allocations and releases"),
+                        new Tag().name("Payments").description("Payments to contractors"),
+                        new Tag().name("Notifications").description("User notifications")
                 ));
     }
 }

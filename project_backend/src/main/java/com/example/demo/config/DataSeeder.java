@@ -37,7 +37,13 @@ public class DataSeeder {
                 "CONTRACTOR_READ","CONTRACTOR_WRITE",
                 "MILESTONE_READ","MILESTONE_WRITE",
                 "PAYMENT_READ","PAYMENT_WRITE",
-                "REPORT_READ"
+                "REPORT_READ",
+                "CONTRACT_READ","CONTRACT_WRITE",
+                "INSPECTION_READ","INSPECTION_WRITE",
+                "HANDOVER_READ","HANDOVER_WRITE",
+                "FUND_READ","FUND_WRITE",
+                "DOCUMENT_READ","DOCUMENT_WRITE",
+                "NOTIFICATION_READ","NOTIFICATION_WRITE"
             );
             for (String p : perms) {
                 permissionRepository.findByName(p).orElseGet(() -> permissionRepository.save(new Permission(p)));
