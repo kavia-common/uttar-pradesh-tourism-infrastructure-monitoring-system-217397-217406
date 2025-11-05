@@ -4,19 +4,19 @@ import com.example.demo.model.domain.NotificationQueue;
 import com.example.demo.model.domain.NotificationQueue.Status;
 import com.example.demo.repository.domain.NotificationQueueRepository;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -37,13 +37,13 @@ public class NotificationQueueService {
 
     public NotificationQueueService(NotificationQueueRepository repo,
                                     JavaMailSender mailSender,
-                                    @Value("${MAIL_ENABLED:${spring.mail.host:}}") String mailHostOrEmpty,
+                                    // When spring.mail.host (or MAIL_ENABLED) is non-empty, we consider mail enabled
+                                    @Value("${MAIL_ENABLED:${spring.mail.host:}}") String mailHostOrEnabledFlag,
                                     @Value("${NOTIFY_MAX_RETRIES:3}") int maxRetries,
                                     @Value("${NOTIFY_BATCH_SIZE:25}") int batchSize) {
         this.repo = repo;
         this.mailSender = mailSender;
-        // If spring.mail.host is empty, consider mail disabled; caller provides MAIL_ENABLED passthrough fallback.
-        this.mailEnabled = mailHostOrEmpty != null && !mailHostOrEmpty.isBlank();
+        this.mailEnabled = mailHostOrEnabledFlag != null && !mailHostOrEnabledFlag.isBlank();
         this.maxRetries = Math.max(0, maxRetries);
         this.batchSize = Math.max(1, batchSize);
     }
@@ -77,23 +77,23 @@ public class NotificationQueueService {
     }
 
     /**
-     * Scheduled processor runs every minute to attempt sending queued notifications.
-     * Uses pessimistic lock on selection to avoid duplicate processing.
+     * Scheduled processor (fixed delay) to attempt sending queued notifications.
+     * Uses pessimistic locking query in repository to avoid duplicates across instances.
      */
     @Scheduled(fixedDelayString = "${NOTIFY_SCHEDULER_DELAY_MS:60000}")
     @Transactional
     public void processQueue() {
         List<NotificationQueue> pending = repo.findPendingBatch(Status.PENDING, LocalDateTime.now());
-        int count = 0;
+        int processed = 0;
         for (NotificationQueue item : pending) {
-            if (count >= batchSize) break;
+            if (processed >= batchSize) break;
             try {
                 attemptSend(item);
             } catch (Exception ex) {
                 log.warn("Notification send attempt failed for id {}: {}", item.getId(), ex.getMessage());
                 handleFailure(item, ex);
             }
-            count++;
+            processed++;
         }
     }
 
@@ -132,7 +132,7 @@ public class NotificationQueueService {
         if (retries > maxRetries) {
             item.setStatus(Status.FAILED);
         } else {
-            item.setStatus(Status.PENDING); // keep pending for retry on next pass
+            item.setStatus(Status.PENDING);
             // simple backoff: schedule next attempt a minute later per retry
             item.setScheduledAt(LocalDateTime.now().plusMinutes(retries));
         }
@@ -144,7 +144,9 @@ public class NotificationQueueService {
         return s.length() > len ? s.substring(0, len - 1) + "…" : s;
     }
 
-    // DTO for enqueue endpoint
+    /**
+     * Request DTO for enqueue endpoint.
+     */
     public static class EnqueueRequest {
         @Schema(description = "Email address of recipient", example = "user@example.com")
         @NotBlank @Email public String toEmail;
